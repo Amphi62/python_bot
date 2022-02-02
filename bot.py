@@ -64,7 +64,7 @@ async def get_hiragana(ctx):
     shuffle(historic_hiragana)
     elt = historic_hiragana.pop(0)
 
-    await ctx.send(f"**{elt.word}** ||{elt.romanji} : {elt.traduction}||")
+    await ctx.send(f"**{elt.word}** ||{elt.romanji}|| ||{elt.traduction}||")
 
     if len(historic_hiragana) == 0:
         historic_hiragana = WORD_HIRAGANA.copy()
@@ -77,11 +77,16 @@ async def get_katakana(ctx):
     shuffle(historic_katakana)
     elt = historic_katakana.pop(0)
 
-    await ctx.send(f"**{elt.word}** ||{elt.romanji} : {elt.traduction}||")
+    await ctx.send(f"**{elt.word}** ||{elt.romanji}|| : ||{elt.traduction}||")
 
     if len(historic_katakana) == 0:
         historic_katakana = WORD_KATAKANA.copy()
         await ctx.send("Il n'y a plus de mot dans la liste. Re-remplissage automatique.")
+
+
+@bot.command(name="aurelie")
+async def aurelie(ctx):
+    await ctx.send("bouh bouh bouh")
 
 
 @bot.command(name="help")
@@ -97,6 +102,11 @@ async def help(ctx):
     embed.add_field(name="**!get-hiragana**", value="Retourne un hiragana. Donne la solution en spoiler.", inline=False)
     embed.add_field(name="**!get-katakana**", value="Retourne un katakana. Donne la solution en spoiler.", inline=False)
     await ctx.send(embed=embed)
+
+
+async def on_message(message):
+    if message.content == "pong":
+        await message.channel.send('ping')
 
 
 bot.run(TOKEN)

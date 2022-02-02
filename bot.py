@@ -14,7 +14,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 client = discord.Client()
 bot = commands.Bot(command_prefix="!")
-
+bot.remove_command('help')
 
 historic_hiragana = WORD_HIRAGANA.copy()
 historic_katakana = WORD_KATAKANA.copy()
@@ -82,6 +82,21 @@ async def get_katakana(ctx):
     if len(historic_katakana) == 0:
         historic_katakana = WORD_KATAKANA.copy()
         await ctx.send("Il n'y a plus de mot dans la liste. Re-remplissage automatique.")
+
+
+@bot.command(name="help")
+async def help(ctx):
+    embed = discord.Embed(colour=discord.Colour.blue())
+    embed.set_author(name='Liste des commandes')
+
+    # Commandes User
+    embed.add_field(name="**!uwu**", value="uWuuuuuuuuuuu", inline=False)
+    embed.add_field(name="**!hu-tao**", value="Dit des vérités sur le pire perso du jeu", inline=False)
+    embed.add_field(name="**!hiragana**", value="Affiche le tableau des hiragana", inline=False)
+    embed.add_field(name="**!katakana**", value="Affiche le tableau des katakana", inline=False)
+    embed.add_field(name="**!get-hiragana**", value="Retourne un hiragana. Donne la solution en spoiler.", inline=False)
+    embed.add_field(name="**!get-katakana**", value="Retourne un katakana. Donne la solution en spoiler.", inline=False)
+    await ctx.send(embed=embed)
 
 
 bot.run(TOKEN)

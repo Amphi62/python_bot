@@ -45,9 +45,7 @@ HIRAGANA = {
     "wa": "わ",
     "wo": "を",
     "n": "ん",
-}
 
-HIRAGANA_PONCTUATION = {
     "ga": "が",
     "gi": "ぎ",
     "gu": "ぐ",
@@ -73,9 +71,7 @@ HIRAGANA_PONCTUATION = {
     "pu": "ぷ",
     "pe": "ぺ",
     "po": "ぽ",
-}
 
-HIRAGANA_COMBINAISONS = {
     "kya": "きゃ",
     "kyu": "きゅ",
     "kyo": "きょ",
@@ -108,5 +104,8 @@ HIRAGANA_COMBINAISONS = {
     "myo": "みょ",
     "rya": "りゃ",
     "ryu": "りゅ",
-    "ryo": "りょ"
+    "ryo": "りょ",
+    
+    "allongement": "う",
+    "pause": "っ",
 }

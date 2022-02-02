@@ -1,9 +1,10 @@
-from resources.hiragana import HIRAGANA
+from resources.hiragana import HIRAGANA, HIRAGANA_PONCTUATION, HIRAGANA_COMBINAISONS
 from resources.katakana import KATAKANA
 
 
 def transform_to_katakana(*romanji):
     answer = ""
+
     for letter in romanji:
         letter = letter.upper()
         if letter not in KATAKANA:
@@ -14,8 +15,9 @@ def transform_to_katakana(*romanji):
     return answer
 
 
-def transform_to_hirigana(*romanji):
+def transform_to_hiragana(*romanji):
     answer = ""
+
     for letter in romanji:
         letter = letter.lower()
         if letter not in HIRAGANA:

@@ -45,9 +45,7 @@ KATAKANA = {
     "WA": "ワ",
     "WO": "ヲ",
     "N": "ン",
-}
 
-KATAKANA_PONCTUATION = {
     "GA": "ガ",
     "GI": "ギ",
     "GU": "グ",
@@ -73,9 +71,12 @@ KATAKANA_PONCTUATION = {
     "PU": "プ",
     "PE": "ペ",
     "PO": "ポ",
-}
 
-KATAKANA_COMBINAISONS = {
+    "FA": "ファ",
+    "FI": "フィ",
+    "FE": "フェ",
+    "FO": "フォ",
+
     "KYA": "キャ",
     "KYU": "キュ",
     "KYO": "キョ",
@@ -109,6 +110,7 @@ KATAKANA_COMBINAISONS = {
     "RYA": "リャ",
     "RYU": "リュ",
     "RYO": "リョ",
-}
 
-KATAKANA_PAUSE = "ー"
+    "PAUSE": "ッ",
+    "ALLONGEMENT": "ー"
+}

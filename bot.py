@@ -1,17 +1,23 @@
 import discord
 from discord.ext import commands
-from random import randint
+from random import randint, shuffle
 import os
 from dotenv import load_dotenv
 
 from entity.BlindTest import BlindTest
 from resources.hu_tao import HU_TAO
+from resources.word_hiragana import WORD_HIRAGANA
+from resources.word_katakana import WORD_KATAKANA
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
 client = discord.Client()
 bot = commands.Bot(command_prefix="!")
+
+
+historic_hiragana = WORD_HIRAGANA.copy()
+historic_katakana = WORD_KATAKANA.copy()
 
 
 @bot.command(name="uwu")
@@ -50,6 +56,32 @@ async def create_blind_test(ctx, *args):
         blind_test = BlindTest(name, number)
 
         await ctx.send(f"Blind test num. { blind_test.get_id() } créé avec succès !")
+
+
+@bot.command(name="get-hiragana")
+async def get_hiragana(ctx):
+    global historic_hiragana
+    shuffle(historic_hiragana)
+    elt = historic_hiragana.pop(0)
+
+    await ctx.send(f"**{elt.word}** ||{elt.romanji} : {elt.word}||")
+
+    if len(historic_hiragana) == 0:
+        historic_hiragana = WORD_HIRAGANA.copy()
+        await ctx.send("Il n'y a plus de mot dans la liste. Re-remplissage automatique.")
+
+
+@bot.command(name="get-katakana")
+async def get_katakana(ctx):
+    global historic_katakana
+    shuffle(historic_katakana)
+    elt = historic_katakana.pop(0)
+
+    await ctx.send(f"**{elt.word}** ||{elt.romanji} : {elt.word}||")
+
+    if len(historic_katakana) == 0:
+        historic_katakana = WORD_KATAKANA.copy()
+        await ctx.send("Il n'y a plus de mot dans la liste. Re-remplissage automatique.")
 
 
 bot.run(TOKEN)

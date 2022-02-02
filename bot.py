@@ -64,7 +64,7 @@ async def get_hiragana(ctx):
     shuffle(historic_hiragana)
     elt = historic_hiragana.pop(0)
 
-    await ctx.send(f"**{elt.word}** ||{elt.romanji} : {elt.word}||")
+    await ctx.send(f"**{elt.word}** ||{elt.romanji} : {elt.traduction}||")
 
     if len(historic_hiragana) == 0:
         historic_hiragana = WORD_HIRAGANA.copy()
@@ -77,7 +77,7 @@ async def get_katakana(ctx):
     shuffle(historic_katakana)
     elt = historic_katakana.pop(0)
 
-    await ctx.send(f"**{elt.word}** ||{elt.romanji} : {elt.word}||")
+    await ctx.send(f"**{elt.word}** ||{elt.romanji} : {elt.traduction}||")
 
     if len(historic_katakana) == 0:
         historic_katakana = WORD_KATAKANA.copy()

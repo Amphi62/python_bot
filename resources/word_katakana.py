@@ -7,7 +7,7 @@ WORD_KATAKANA = [
     WordJapanese(transform_to_katakana("PE", "N"), "Pen", "le stylo"),
     WordJapanese(transform_to_katakana("NO", "ALLONGEMENT", "TO"), "Nōto", "le cahier"),
     WordJapanese(transform_to_katakana("KA", "RE", "N", "DA", "ALLONGEMENT"), "Karendā", "le calendrier"),
-    WordJapanese(transform_to_katakana("RA", "JI", "O"), "RAJIO", "la radio"),
+    WordJapanese(transform_to_katakana("RA", "JI", "O"), "Rajio", "la radio"),
     WordJapanese(transform_to_katakana("SU", "TE", "RE", "O"), "Sutereo", "la chaîne hi-fi"),
     WordJapanese(transform_to_katakana("TE", "RE", "BI"), "Terebi", "la télévision"),
     WordJapanese(transform_to_katakana("KA", "ME", "RA"), "Kamera", "l'appareil photo"),
@@ -21,6 +21,6 @@ WORD_KATAKANA = [
     WordJapanese(transform_to_katakana("TE", "ALLONGEMENT", "BU", "RU"), "Tēburu", "la table"),
     WordJapanese(transform_to_katakana("FO", "ALLONGEMENT", "KU"), "Fōku", "la fourchette"),
     WordJapanese(transform_to_katakana("NA", "I", "FU"), "Naifu", "le couteau"),
-    WordJapanese(transform_to_katakana("SU", "PU", "ALLONGEMENT", "N"), "Supūn"),
+    WordJapanese(transform_to_katakana("SU", "PU", "ALLONGEMENT", "N"), "Supūn", "la cuillère"),
     WordJapanese(transform_to_katakana("TO", "I", "RE"), "Toire", "les toilettes")
 ]

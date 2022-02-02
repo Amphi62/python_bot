@@ -1,4 +1,4 @@
-from resources.hiragana import HIRAGANA, HIRAGANA_PONCTUATION, HIRAGANA_COMBINAISONS
+from resources.hiragana import HIRAGANA
 from resources.katakana import KATAKANA
 
 

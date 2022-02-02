@@ -20,6 +20,8 @@ WORD_HIRAGANA = [
     WordJapanese(transform_to_hiragana("ta", "da", "i", "ma"), "tadaima", "Je suis rentré"),
     WordJapanese(transform_to_hiragana("i", "ra", "pause", "shi", "ya", "i", "ma", "se"), "irashiyaimase", "Bienvenue"),
     WordJapanese(transform_to_hiragana("yo", "u", "ko", "so"), "yōkoso", "Bienvenue"),
+
+    # animaux
     WordJapanese(transform_to_hiragana("a", "hi", "ru"), "ahiru", "Canard"),
     WordJapanese(transform_to_hiragana("i", "ru", "ka"), "iruka", "Dophin"),
     WordJapanese(transform_to_hiragana("i", "n", "ko"), "inko", "Perruche"),
@@ -55,5 +57,21 @@ WORD_HIRAGANA = [
     WordJapanese(transform_to_hiragana("ya", "gi"), "yagi", "Chèvre"),
     WordJapanese(transform_to_hiragana("ka", "ba"), "kaba", "Hippopotame"),
     WordJapanese(transform_to_hiragana("ku", "mo"), "kumo", "Araignée"),
-    WordJapanese(transform_to_hiragana("o", "o", "ka", "mi"), "Ōkami", "Loup")
+    WordJapanese(transform_to_hiragana("o", "o", "ka", "mi"), "Ōkami", "Loup"),
+
+    # nom des couleurs
+    WordJapanese(transform_to_hiragana("a", "ka"), "aka", "le rouge"),
+    WordJapanese(transform_to_hiragana("a", "o"), "ao", "le bleu"),
+    WordJapanese(transform_to_hiragana("ki", "ri", "ro"), "kiriro", "le jaune"),
+    WordJapanese(transform_to_hiragana("da", "i", "da", "i", "i", "ro"), "daidaīro", "le orange"),
+    WordJapanese(transform_to_hiragana("mu", "ra", "sa", "ki"), "murasaki", "le violet"),
+    WordJapanese(transform_to_hiragana("mi", "do", "ri"), "midori", "le vert"),
+    WordJapanese(transform_to_hiragana("shi", "ro"), "shiro", "le blanc"),
+    WordJapanese(transform_to_hiragana("ku", "ro"), "kuro", "le noir"),
+    WordJapanese(transform_to_hiragana("ha", "i", "i", "ro"), "haiiro", "le gris"),
+    WordJapanese(transform_to_hiragana("u", "su", "mu", "ra", "sa", "ki", "i", "ro"), "usumurasakiiro", "le mauve"),
+    WordJapanese(transform_to_hiragana("ku", "re", "na", "i"), "kurenai", "le cramoisi"),
+    WordJapanese(transform_to_hiragana("mi", "zu", "i", "ro"), "mizuiro", "le bleu clair"),
+    WordJapanese(transform_to_hiragana("ni", "ji", "i", "ro"), "nijiiro", "couleur arc-en-ciel"),
+
 ]

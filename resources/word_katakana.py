@@ -22,5 +22,15 @@ WORD_KATAKANA = [
     WordJapanese(transform_to_katakana("FO", "ALLONGEMENT", "KU"), "Fōku", "la fourchette"),
     WordJapanese(transform_to_katakana("NA", "I", "FU"), "Naifu", "le couteau"),
     WordJapanese(transform_to_katakana("SU", "PU", "ALLONGEMENT", "N"), "Supūn", "la cuillère"),
-    WordJapanese(transform_to_katakana("TO", "I", "RE"), "Toire", "les toilettes")
+    WordJapanese(transform_to_katakana("TO", "I", "RE"), "Toire", "les toilettes"),
+
+    # nom des couleurs
+    WordJapanese(transform_to_katakana("O", "RE", "N", "JI", "I", "RO"), "Orenjiiro", "le orange"),
+    WordJapanese(transform_to_katakana("PI", "N", "KU"), "Pinku", "le rose"),
+    WordJapanese(transform_to_katakana("CHA", "I", "RO"), "Chairo", "le marron"),
+    WordJapanese(transform_to_katakana("BE", "ALLONGEMENT", "JU"), "Beju", "le beige"),
+    WordJapanese(transform_to_katakana("MO", "ALLONGEMENT", "BU"), "Mobu", "le mauve"),
+    WordJapanese(transform_to_katakana("MA", "ZE", "N", "TA"), "Mazenta", "le magenta"),
+    WordJapanese(transform_to_katakana("SHI", "A", "N"), "Shian", "le cyan"),
+    WordJapanese(transform_to_katakana("KI", "N", "I", "RO"), "Kiniro", "l'or"),
 ]

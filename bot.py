@@ -3,6 +3,7 @@ from discord.ext import commands
 from random import randint, shuffle
 import os
 from dotenv import load_dotenv
+import asyncio
 
 from entity.BlindTest import BlindTest
 from resources.hu_tao import HU_TAO
@@ -22,7 +23,7 @@ historic_katakana = WORD_KATAKANA.copy()
 
 @bot.command(name="uwu")
 async def uwu(ctx):
-    await ctx.send(f"uw{'u' * randint(1, 15) } !!!")
+    await ctx.send(f"uw{'u' * randint(1, 15)} !!!")
 
 
 @bot.command(name="hu_tao")
@@ -55,7 +56,7 @@ async def create_blind_test(ctx, *args):
         number = 3 if len(args) == 1 else args[1]
         blind_test = BlindTest(name, number)
 
-        await ctx.send(f"Blind test num. { blind_test.get_id() } créé avec succès !")
+        await ctx.send(f"Blind test num. {blind_test.get_id()} créé avec succès !")
 
 
 @bot.command(name="get-hiragana")
@@ -104,9 +105,38 @@ async def help(ctx):
     await ctx.send(embed=embed)
 
 
+@bot.command(name="clear")
+async def clear(ctx, number=None):
+    if number is None:
+        number = 0
+        async for _ in ctx.history(limit=None):
+            number += 1
+    else:
+        number = int(number)
+
+    while number > 0:
+        if number > 100:
+            await ctx.channel.purge(limit=100)
+            number -= 100
+        else:
+            await ctx.channel.purge(limit=number)
+            number = 0
+        await asyncio.sleep(1.2)
+
+
+@bot.event
 async def on_message(message):
     if message.content == "pong":
         await message.channel.send('ping')
+    elif message.content == "ping":
+        await message.channel.send("pong")
+
+    await bot.process_commands(message)
+
+
+@bot.event
+async def on_command_error(ctx, error):
+    await ctx.send(f"La commande n'existe pas !")
 
 
 bot.run(TOKEN)

@@ -1,5 +1,8 @@
 # discord importations
+from typing import Optional
+
 import discord
+from discord import Member
 from discord.ext import commands, tasks
 
 # asynchron and threading libraries
@@ -7,6 +10,8 @@ import asyncio
 
 # python default librairies
 import os
+import json
+import re
 from random import randint, shuffle
 from datetime import datetime
 
@@ -137,6 +142,57 @@ async def clear(ctx, number=None):
         await asyncio.sleep(1.2)
 
 
+@bot.command(name='add_date')
+async def add_date(ctx, date, *username):
+    path, historic_path = build_path_birthday(ctx.guild.id)
+
+    with open(path, 'rb') as data:
+        json_values = json.load(data)
+
+        if not is_admin(ctx.author) and already_use(json_values, ctx.author.id):
+            await ctx.send("Vous ne pouvez pas ajouter une nouvelle date. Seules les administrateurs peuvent en "
+                           "sélectionner plusieurs.")
+
+        if not re.match(r'[0-9]{2}/[0-9]{2}(/([0-9]{4})|([0-9]{2}))?', date):
+            await ctx.send("Le format de la date est erroné. Veuillez utilisé l'un des deux formats : jj/mm/YY ou "
+                           "jj/mm/YYYY")
+
+        day, month, year = split_date(date)
+
+        if not evaluate_date(day, month, year):
+            await ctx.send("La date entrée n'existe pas.")
+
+        new_birth = {
+            "username": ' '.join(username),
+            "id_user": ctx.author.id,
+            "date_add": datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            "year": year
+        }
+
+        build_day = day + "/" + month
+        calendar = json_values['calendar']
+
+        if build_day in calendar:
+            calendar[build_day].append(new_birth)
+        else:
+            calendar[build_day] = [new_birth]
+
+        with open(path, 'w') as file:
+            json.dump(json_values, file)
+
+        await ctx.send("La date a bien été ajouté !")
+
+
+@bot.command(name='remove_date')
+async def remove_date(ctx):
+    path, historic_path = build_path_birthday(ctx.guild.id)
+
+    with open(path, 'rb') as data:
+        json_values = json.load(data)
+
+        if not is_admin(ctx.author):
+            pass
+
 
 @bot.event
 async def on_message(message):
@@ -151,6 +207,86 @@ async def on_message(message):
 @bot.event
 async def on_command_error(ctx, error):
     await ctx.send(f"{ error }")
+
+
+def build_path_birthday(id_serv: int) -> tuple[str, str]:
+    path = 'resources/birthday/birthday-' + str(id_serv) + '.json'
+    historic_path = 'resources/historical/hist-birthday-' + str(id_serv) + '.json'
+
+    # if file doesn't exist, we create thus
+    create_birthday_file(path, historic_path, id_serv)
+
+    return path, historic_path
+
+
+def create_birthday_file(path: str, historic_path: str, id_serv: int) -> None:
+    if not os.path.exists(path):
+        with open(path, 'w') as file:
+            data = {
+                "id": id_serv,
+                "preventAWeekAgo": True,
+                "calendar": dict()
+            }
+            json.dump(data, file)
+
+    if not os.path.exists(historic_path):
+        with open(historic_path, 'w') as file:
+            data = {
+                "day_checked": list()
+            }
+            json.dump(data, file)
+
+
+def is_admin(author: Member) -> bool:
+    roles = author.roles
+    return any(map(lambda r: r.permissions.administrator, roles))
+
+
+def already_use(datas: dict, id_author: int) -> bool:
+    calendar = datas['calendar']
+
+    for key, value in enumerate(calendar):
+        if len([birth for birth in value if birth['id_user'] == id_author]) > 0:
+            return True
+
+    return False
+
+
+def split_date(date: str) -> tuple[str, str, Optional[str]]:
+    elt = date.split('/')
+
+    day = elt[0]
+    month = elt[1]
+    year = None
+
+    if len(elt) > 2:
+        year = elt[2]
+
+    return day, month, year
+
+
+def evaluate_date(day: str, month: str, year: Optional[str]) -> bool:
+    int_day = int(day)
+    int_month = int(month)
+
+    if int_day < 1 or int_month < 1:
+        return False
+
+    if int_month % 2 == 1 and int_day > 31:
+        return False
+
+    if int_month % 2 == 0 and int_day > 30:
+        return False
+
+    if int_month == 2:
+        if year is not None:
+            if int(year) % 4 != 0 and int_day > 28:
+                return False
+
+        if int_day > 29:
+            return False
+
+    return True
 
 
 bot.run(TOKEN)

@@ -139,6 +139,72 @@ async def clear(ctx, number=None):
         await asyncio.sleep(1.2)
 
 
+@bot.command(name='create_inv')
+async def create_inventory(ctx, *parameters):
+    name = " ".join(parameters)
+    name_code = "_".join(parameters).lower()
+
+    if len(parameters) == 0:
+        await ctx.send(f"Il faut saisir un nom.")
+    else:
+        inventory = Inventory(name, name_code)
+        name_path = f"resources/inventory/inventory-{ ctx.author.id }"
+
+        if os.path.exists(name_path):
+            list_inventory = build_inventory(name_path)
+        else:
+            list_inventory = ListInventory(ctx.author.id, name_path)
+
+        if list_inventory.contains_inventory(name_code):
+            await ctx.send(f"Cet inventaire existe déjà.")
+        else:
+            list_inventory.add_inventory(inventory)
+            list_inventory.save_inventory()
+
+            debug(list_inventory, "Create a new inventory")
+
+            await ctx.send(f"L'inventaire a été crée avec succès. Il a pour nom de code : { name_code }.")
+
+
+@bot.command(name='delete_inv')
+async def delete_inventory(ctx, *parameters):
+    name_code = "_".join(parameters).lower()
+
+    if len(parameters) == 0:
+        await ctx.send(f"Il faut saisir un nom.")
+    else:
+        name_path = f"resources/inventory/inventory-{ctx.author.id}"
+
+        if os.path.exists(name_path):
+            list_inventory = build_inventory(name_path)
+        else:
+            list_inventory = ListInventory(ctx.author.id, name_path)
+
+        if list_inventory.contains_inventory(name_code):
+            list_inventory.remove_inventory(name_code)
+            list_inventory.save_inventory()
+            debug(list_inventory, f"Delete a {name_code} inventory")
+            await ctx.send(f"La suppression a été faite avec succès.")
+        else:
+            await ctx.send(f"L'inventaire n'existe pas. Il faut entrer le nom de code. Utilisez \"!list_inv\", "
+                           f"pour récupérer la liste de vos inventaires.")
+
+
+@bot.command(name="list_inv")
+async def list_inv(ctx):
+    name_path = f"resources/inventory/inventory-{ctx.author.id}"
+
+    if not os.path.exists(name_path):
+        await ctx.send(f"Vous n'avez pas d'inventaire.")
+    else:
+        list_inventory = build_inventory(name_path)
+
+        if list_inventory.list_inventories_is_empty():
+            await ctx.send(f"Vous n'avez pas d'inventaire.")
+        else:
+            await ctx.send(f"{list_inventory.get_inventories()}")
+
+
 @bot.event
 @function_called_coroutine
 async def on_message(message):
@@ -155,30 +221,5 @@ async def on_message(message):
 async def on_command_error(ctx, error):
     await ctx.send(f"{error}")
 
-
-@bot.command(name='create_inv')
-async def create_inventory(ctx, *parameters):
-    name = "_".join(parameters)
-
-    if len(parameters) == 0:
-        await ctx.send(f"Il faut saisir un nom.")
-    else:
-        inventory = Inventory(name)
-        name_path = f"resources/inventory/inventory-{ ctx.author.id }"
-
-        if os.path.exists(name_path):
-            list_inventory = build_inventory(name_path)
-        else:
-            list_inventory = ListInventory(ctx.author.id, name_path)
-
-        if list_inventory.contains_inventory(name):
-            await ctx.send(f"Cet inventaire existe déjà.")
-        else:
-            list_inventory.add_inventory(inventory)
-            list_inventory.save_inventory()
-
-            debug(list_inventory, "Create a new inventory")
-
-            await ctx.send(f"L'inventaire a été crée avec succès. Il a pour nom : { name }.")
 
 bot.run(TOKEN)

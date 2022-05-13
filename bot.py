@@ -1,11 +1,19 @@
+# discord importations
 import discord
-from discord.ext import commands
-from random import randint, shuffle
-import os
-from dotenv import load_dotenv
+from discord.ext import commands, tasks
+
+# asynchron and threading libraries
 import asyncio
 
-from entity.BlindTest import BlindTest
+# python default librairies
+import os
+from random import randint, shuffle
+from datetime import datetime
+
+# download dependencies
+from dotenv import load_dotenv
+
+# own class importations
 from resources.hu_tao import HU_TAO
 from resources.word_hiragana import WORD_HIRAGANA
 from resources.word_katakana import WORD_KATAKANA
@@ -21,8 +29,26 @@ historic_hiragana = WORD_HIRAGANA.copy()
 historic_katakana = WORD_KATAKANA.copy()
 
 
+def debug(content, title=None):
+    with open("logs.txt", "a") as text_file:
+        time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+        if title is None:
+            title = ''
+        else:
+            title += ' - '
+
+        print(f"[{time}] {title}{content}", file=text_file)
+
+
+@bot.event
+async def on_ready():
+    debug("Starting bot !")
+
+
 @bot.command(name="uwu")
 async def uwu(ctx):
+    debug("uwu")
     await ctx.send(f"uw{'u' * randint(1, 15)} !!!")
 
 
@@ -44,19 +70,6 @@ async def tab_katakana(ctx):
     with open('resources/img/katakana-tableau.jpg', 'rb') as f:
         picture = discord.File(f)
         await ctx.send(file=picture)
-
-
-@bot.command(name="create-bt")
-# @commands.has_role('admin')
-async def create_blind_test(ctx, *args):
-    if len(args) < 1:
-        await ctx.send("La commande doit au moins être suivi d'un nom")
-    else:
-        name = args[0]
-        number = 3 if len(args) == 1 else args[1]
-        blind_test = BlindTest(name, number)
-
-        await ctx.send(f"Blind test num. {blind_test.get_id()} créé avec succès !")
 
 
 @bot.command(name="get-hiragana")
@@ -124,19 +137,20 @@ async def clear(ctx, number=None):
         await asyncio.sleep(1.2)
 
 
+
 @bot.event
 async def on_message(message):
-    if message.content == "pong":
-        await message.channel.send('ping')
-    elif message.content == "ping":
-        await message.channel.send("pong")
+    # if message.content == "pong":
+    #    await message.channel.send('ping')
+    # elif message.content == "ping":
+    #    await message.channel.send("pong")
 
     await bot.process_commands(message)
 
 
 @bot.event
 async def on_command_error(ctx, error):
-    await ctx.send(f"La commande n'existe pas !")
+    await ctx.send(f"{ error }")
 
 
 bot.run(TOKEN)

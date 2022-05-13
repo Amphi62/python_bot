@@ -14,11 +14,15 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # own class importations
+from entity.inventory.Inventory import Inventory
+from entity.inventory.ListInventory import ListInventory
 from resources.hu_tao import HU_TAO
 from resources.word_hiragana import WORD_HIRAGANA
 from resources.word_katakana import WORD_KATAKANA
+
 from utility.debug import debug
 from utility.decorator import function_called, function_called_coroutine
+from utility.inventory_builder import build_inventory
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -151,5 +155,30 @@ async def on_message(message):
 async def on_command_error(ctx, error):
     await ctx.send(f"{error}")
 
+
+@bot.command(name='create_inv')
+async def create_inventory(ctx, *parameters):
+    name = "_".join(parameters)
+
+    if len(parameters) == 0:
+        await ctx.send(f"Il faut saisir un nom.")
+    else:
+        inventory = Inventory(name)
+        name_path = f"resources/inventory/inventory-{ ctx.author.id }"
+
+        if os.path.exists(name_path):
+            list_inventory = build_inventory(name_path)
+        else:
+            list_inventory = ListInventory(ctx.author.id, name_path)
+
+        if list_inventory.contains_inventory(name):
+            await ctx.send(f"Cet inventaire existe déjà.")
+        else:
+            list_inventory.add_inventory(inventory)
+            list_inventory.save_inventory()
+
+            debug(list_inventory, "Create a new inventory")
+
+            await ctx.send(f"L'inventaire a été crée avec succès. Il a pour nom : { name }.")
 
 bot.run(TOKEN)

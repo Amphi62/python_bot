@@ -11,9 +11,11 @@ from random import randint, shuffle
 from datetime import datetime
 
 # download dependencies
+import youtube_dl
 from dotenv import load_dotenv
 
 # own class importations
+from factory.QueueFactory import QueueFactory
 from resources.hu_tao import HU_TAO
 from resources.word_hiragana import WORD_HIRAGANA
 from resources.word_katakana import WORD_KATAKANA
@@ -27,6 +29,8 @@ bot.remove_command('help')
 
 historic_hiragana = WORD_HIRAGANA.copy()
 historic_katakana = WORD_KATAKANA.copy()
+
+queue = QueueFactory.playlist1()
 
 
 def debug(content, title=None):
@@ -151,6 +155,71 @@ async def on_message(message):
 @bot.event
 async def on_command_error(ctx, error):
     await ctx.send(f"{ error }")
+
+
+@bot.command(name="join")
+async def join_room(ctx):
+    channel = ctx.message.author.voice.channel
+    await channel.connect()
+
+
+@bot.command(name="leave")
+async def leave_room(ctx):
+    await ctx.voice_client.disconnect()
+
+
+@bot.command(name="play")
+async def play(ctx):
+    ydl_opts = {'format': 'bestaudio'}
+    FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+
+    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(queue.get_current_music().get_url(), download=False)
+        new_url = info['formats'][0]['url']
+
+    ctx.voice_client.play(discord.FFmpegPCMAudio(new_url, **FFMPEG_OPTIONS), after=lambda e: next(ctx))
+
+
+@bot.command(name='pause')
+async def pause(ctx):
+    if ctx.voice_client.is_playing():
+        await ctx.voice_client.pause()
+    else:
+        await ctx.send("Faudrait p'tête que y'a déjà une musique nan ?")
+
+
+@bot.command(name='resume')
+async def resume(ctx):
+    if ctx.voice_client.is_paused():
+        await ctx.voice_client.resume()
+    else:
+        await ctx.send("Faudrait p'tête que y'a déjà une musique nan ?")
+
+
+@bot.command(name='stop')
+async def stop(ctx):
+    if ctx.voice_client.is_playing():
+        await ctx.voice_client.stop()
+    else:
+        await ctx.send("Faudrait p'tête que y'a déjà une musique nan ?")
+
+
+@bot.command(name='next')
+async def next(ctx):
+    if ctx.voice_client.is_playing():
+        await ctx.voice_client.stop()
+
+    queue.next_music()
+    await play(ctx)
+
+
+@bot.command(name='prev')
+async def prev(ctx):
+    if ctx.voice_client.is_playing():
+        await ctx.voice_client.stop()
+
+    queue.previous_music()
+    await play(ctx)
 
 
 bot.run(TOKEN)

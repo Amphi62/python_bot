@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 from resources.hu_tao import HU_TAO
 from resources.word_hiragana import WORD_HIRAGANA
 from resources.word_katakana import WORD_KATAKANA
+from utility.debug import debug
+from utility.decorator import function_called, function_called_coroutine
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -29,36 +31,26 @@ historic_hiragana = WORD_HIRAGANA.copy()
 historic_katakana = WORD_KATAKANA.copy()
 
 
-def debug(content, title=None):
-    with open("logs.txt", "a") as text_file:
-        time = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
-        if title is None:
-            title = ''
-        else:
-            title += ' - '
-
-        print(f"[{time}] {title}{content}", file=text_file)
-
-
 @bot.event
 async def on_ready():
     debug("Starting bot !")
 
 
 @bot.command(name="uwu")
+@function_called_coroutine
 async def uwu(ctx):
-    debug("uwu")
     await ctx.send(f"uw{'u' * randint(1, 15)} !!!")
 
 
 @bot.command(name="hu_tao")
+@function_called_coroutine
 async def hu_tao(ctx):
     insult = HU_TAO[randint(0, len(HU_TAO) - 1)]
     await ctx.send(f"{insult}")
 
 
 @bot.command(name="hiragana")
+@function_called_coroutine
 async def tab_hirigana(ctx):
     with open('resources/img/hiragana-tableau.jpg', 'rb') as f:
         picture = discord.File(f)
@@ -66,6 +58,7 @@ async def tab_hirigana(ctx):
 
 
 @bot.command(name="katakana")
+@function_called_coroutine
 async def tab_katakana(ctx):
     with open('resources/img/katakana-tableau.jpg', 'rb') as f:
         picture = discord.File(f)
@@ -73,6 +66,7 @@ async def tab_katakana(ctx):
 
 
 @bot.command(name="get-hiragana")
+@function_called_coroutine
 async def get_hiragana(ctx):
     global historic_hiragana
     shuffle(historic_hiragana)
@@ -86,6 +80,7 @@ async def get_hiragana(ctx):
 
 
 @bot.command(name="get-katakana")
+@function_called_coroutine
 async def get_katakana(ctx):
     global historic_katakana
     shuffle(historic_katakana)
@@ -99,11 +94,13 @@ async def get_katakana(ctx):
 
 
 @bot.command(name="aurelie")
+@function_called_coroutine
 async def aurelie(ctx):
     await ctx.send("bouh bouh bouh")
 
 
 @bot.command(name="help")
+@function_called_coroutine
 async def help(ctx):
     embed = discord.Embed(colour=discord.Colour.blue())
     embed.set_author(name='Liste des commandes')
@@ -119,6 +116,7 @@ async def help(ctx):
 
 
 @bot.command(name="clear")
+@function_called_coroutine
 async def clear(ctx, number=None):
     if number is None:
         number = 0
@@ -137,8 +135,8 @@ async def clear(ctx, number=None):
         await asyncio.sleep(1.2)
 
 
-
 @bot.event
+@function_called_coroutine
 async def on_message(message):
     # if message.content == "pong":
     #    await message.channel.send('ping')
@@ -149,8 +147,9 @@ async def on_message(message):
 
 
 @bot.event
+@function_called_coroutine
 async def on_command_error(ctx, error):
-    await ctx.send(f"{ error }")
+    await ctx.send(f"{error}")
 
 
 bot.run(TOKEN)

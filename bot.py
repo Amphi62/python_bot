@@ -97,26 +97,75 @@ async def get_katakana(ctx):
         await ctx.send("Il n'y a plus de mot dans la liste. Re-remplissage automatique.")
 
 
-@bot.command(name="aurelie")
-@function_called_coroutine
-async def aurelie(ctx):
-    await ctx.send("bouh bouh bouh")
+def no_command_specify() -> discord.Embed:
+    debug('Pass in no_command_specify()')
+    embed = discord.Embed(colour=discord.Colour.greyple())
 
-
-@bot.command(name="help")
-@function_called_coroutine
-async def help(ctx):
-    embed = discord.Embed(colour=discord.Colour.blue())
     embed.set_author(name='Liste des commandes')
 
-    # Commandes User
+    list_embeds = [
+        basic_command(),
+        japanese_command(),
+        inventory_command()
+    ]
+
+    for emb in list_embeds:
+        for field in emb.fields:
+            embed.add_field(name=field.name, value=field.value, inline=field.inline)
+
+    return embed
+
+
+def basic_command() -> discord.Embed:
+    debug('Pass in basic_command()')
+    embed = discord.Embed(colour=discord.Colour.blue())
+    embed.set_author(name='Liste des commandes')
     embed.add_field(name="**!uwu**", value="uWuuuuuuuuuuu", inline=False)
     embed.add_field(name="**!hu-tao**", value="Dit des vérités sur le pire perso du jeu", inline=False)
+
+    return embed
+
+
+def japanese_command() -> discord.Embed:
+    debug('Pass in japanese_command()')
+    embed = discord.Embed(colour=discord.Colour.gold())
+    embed.set_author(name='Liste des commandes')
     embed.add_field(name="**!hiragana**", value="Affiche le tableau des hiragana", inline=False)
     embed.add_field(name="**!katakana**", value="Affiche le tableau des katakana", inline=False)
     embed.add_field(name="**!get-hiragana**", value="Retourne un hiragana. Donne la solution en spoiler.", inline=False)
     embed.add_field(name="**!get-katakana**", value="Retourne un katakana. Donne la solution en spoiler.", inline=False)
-    await ctx.send(embed=embed)
+
+    return embed
+
+
+def inventory_command() -> discord.Embed:
+    debug('Pass in inventory_command()')
+    embed = discord.Embed(colour=discord.Colour.purple())
+    embed.set_author(name='Liste des commandes')
+    embed.add_field(name="**!create_inv**", value="Créer un nouveau inventaire", inline=False)
+    embed.add_field(name="**!delete_inv**", value="Supprime un inventaire", inline=False)
+    embed.add_field(name="**!list_inv**", value="Retourne la liste de vos inventaires", inline=False)
+
+    return embed
+
+
+@bot.command(name="help")
+async def help_command(ctx, type_help=None):
+    if type_help is None:
+        embed = no_command_specify()
+    elif type_help == 'japanese':
+        embed = japanese_command()
+    elif type_help == 'basic':
+        embed = basic_command()
+    elif type_help == 'inventory':
+        embed = inventory_command()
+    else:
+        embed = None
+
+    if embed is None:
+        await ctx.send(f'Le type {type_help} n\'existe pas.')
+    else:
+        await ctx.send(embed=embed)
 
 
 @bot.command(name="clear")

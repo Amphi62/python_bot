@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    container_name: mysql-discord-bot
+    volumes:
+      - ./docker/mysql/database:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: "uwubot-discord"
+      MYSQL_ROOT_PASSWORD: "root"
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin-discord-bot
+    restart: always
+    ports:
+      - '8010:80'
+    environment:
+      PMA_HOST: mysql
+    depends_on:
+      - mysql

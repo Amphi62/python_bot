@@ -1,6 +1,8 @@
 # discord importations
+import re
+
 import discord
-from discord.ext import commands, tasks
+from discord.ext import commands
 
 # asynchron and threading libraries
 import asyncio
@@ -17,40 +19,54 @@ from dotenv import load_dotenv
 from resources.hu_tao import HU_TAO
 from resources.word_hiragana import WORD_HIRAGANA
 from resources.word_katakana import WORD_KATAKANA
+from service.GameService import GameService
 from utility.debug import debug
-from utility.decorator import function_called, function_called_coroutine
+from utility.decorator import function_called_coroutine
+from utility.game import build_instant_gaming_object, check_link_game_exist
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 
-client = discord.Client()
-bot = commands.Bot(command_prefix="!")
-bot.remove_command('help')
+intents = discord.Intents().all()
+client = discord.Client(intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents)
 
 historic_hiragana = WORD_HIRAGANA.copy()
 historic_katakana = WORD_KATAKANA.copy()
 
+game_service = GameService()
 
+
+# ---------- Event (start and error events) ----------
 @bot.event
 async def on_ready():
     debug("Starting bot !")
 
 
+@bot.event
+async def on_command_error(ctx, error):
+    await ctx.send(f"{error}")
+
+
+# ---------- Extras ----------
 @bot.command(name="uwu")
-@function_called_coroutine
 async def uwu(ctx):
     await ctx.send(f"uw{'u' * randint(1, 15)} !!!")
 
 
 @bot.command(name="hu_tao")
-@function_called_coroutine
 async def hu_tao(ctx):
     insult = HU_TAO[randint(0, len(HU_TAO) - 1)]
     await ctx.send(f"{insult}")
 
 
+@bot.command(name="aurelie")
+async def aurelie(ctx):
+    await ctx.send("bouh bouh bouh")
+
+
+# ---------- Japanese learning ----------
 @bot.command(name="hiragana")
-@function_called_coroutine
 async def tab_hirigana(ctx):
     with open('resources/img/hiragana-tableau.jpg', 'rb') as f:
         picture = discord.File(f)
@@ -58,7 +74,6 @@ async def tab_hirigana(ctx):
 
 
 @bot.command(name="katakana")
-@function_called_coroutine
 async def tab_katakana(ctx):
     with open('resources/img/katakana-tableau.jpg', 'rb') as f:
         picture = discord.File(f)
@@ -66,7 +81,6 @@ async def tab_katakana(ctx):
 
 
 @bot.command(name="get-hiragana")
-@function_called_coroutine
 async def get_hiragana(ctx):
     global historic_hiragana
     shuffle(historic_hiragana)
@@ -80,7 +94,6 @@ async def get_hiragana(ctx):
 
 
 @bot.command(name="get-katakana")
-@function_called_coroutine
 async def get_katakana(ctx):
     global historic_katakana
     shuffle(historic_katakana)
@@ -93,30 +106,8 @@ async def get_katakana(ctx):
         await ctx.send("Il n'y a plus de mot dans la liste. Re-remplissage automatique.")
 
 
-@bot.command(name="aurelie")
-@function_called_coroutine
-async def aurelie(ctx):
-    await ctx.send("bouh bouh bouh")
-
-
-@bot.command(name="help")
-@function_called_coroutine
-async def help(ctx):
-    embed = discord.Embed(colour=discord.Colour.blue())
-    embed.set_author(name='Liste des commandes')
-
-    # Commandes User
-    embed.add_field(name="**!uwu**", value="uWuuuuuuuuuuu", inline=False)
-    embed.add_field(name="**!hu-tao**", value="Dit des vérités sur le pire perso du jeu", inline=False)
-    embed.add_field(name="**!hiragana**", value="Affiche le tableau des hiragana", inline=False)
-    embed.add_field(name="**!katakana**", value="Affiche le tableau des katakana", inline=False)
-    embed.add_field(name="**!get-hiragana**", value="Retourne un hiragana. Donne la solution en spoiler.", inline=False)
-    embed.add_field(name="**!get-katakana**", value="Retourne un katakana. Donne la solution en spoiler.", inline=False)
-    await ctx.send(embed=embed)
-
-
+# ---------- Clear command ----------
 @bot.command(name="clear")
-@function_called_coroutine
 async def clear(ctx, number=None):
     if number is None:
         number = 0
@@ -135,21 +126,45 @@ async def clear(ctx, number=None):
         await asyncio.sleep(1.2)
 
 
-@bot.event
-@function_called_coroutine
-async def on_message(message):
-    # if message.content == "pong":
-    #    await message.channel.send('ping')
-    # elif message.content == "ping":
-    #    await message.channel.send("pong")
+# ---------- InstantGaming and Steam commands ----------
+@bot.command("add_game")
+async def add_game_to_list(ctx, *arguments):
+    steam_link = None
+    instant_gaming_link = None
+    name_game = []
 
-    await bot.process_commands(message)
+    for arg in arguments:
+        if re.match(r'https://.*instant-gaming.*', arg) and check_link_game_exist(arg):
+            instant_gaming_link = arg
+        elif re.match(r'https://.*steam.*', arg) and check_link_game_exist(arg):
+            steam_link = arg
+        else:
+            name_game.append(arg)
+
+    if len(name_game) == 0 or (len(steam_link) == 0 and len(instant_gaming_link) == 0):
+        await ctx.send("Le format est incorrect. Vous devez indiquer le nom du jeu, puis au moins un lien "
+                       "InstantGaming ou Steam.")
+    else:
+        insert_valid = game_service.add(ctx.author.id, " ".join(name_game), instant_gaming_link, steam_link)
+
+        if insert_valid:
+            await ctx.send(
+                "Le jeu a été ajouté à la liste ! Nous scrutons désormais quotidiennement ses jeux, puis vous "
+                "informerons si une réduction apparaît sur les plateformes saisis.")
+        else:
+            await ctx.send("Le jeu existe déjà.")
 
 
-@bot.event
-@function_called_coroutine
-async def on_command_error(ctx, error):
-    await ctx.send(f"{error}")
+@bot.command("delete_game")
+async def delete_game_to_list(ctx, *name):
+    if len(name) == 0:
+        await ctx.send("Vous devez indiquer le nom du jeu à supprimer")
+    else:
+        name_game = " ".join(name)
 
+        if game_service.delete_game(name_game):
+            await ctx.send("Le jeu a bien été supprimé de la liste.")
+        else:
+            await ctx.send("Le jeu est introuvable ou un problème est survenu.")
 
 bot.run(TOKEN)

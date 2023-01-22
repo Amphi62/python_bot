@@ -2,6 +2,7 @@ import mysql.connector
 import os
 
 from entity.enums.TableEnum import TableEnum
+from utility.debug import debug
 
 
 class DatabaseService:
@@ -69,12 +70,9 @@ class DatabaseService:
         )
 
         try:
-            print(sql_request)
-            print(tuple(values.values()))
             cursor.execute(sql_request, tuple(values.values()))
 
             id_game = cursor.lastrowid
-            print(id_game)
             self.database.commit()
 
             cursor.close()
@@ -83,7 +81,7 @@ class DatabaseService:
             cursor.close()
             return -1
 
-    def delete(self, name_table: TableEnum, conditions):
+    def delete(self, name_table: TableEnum, conditions, is_unique_delete=True):
         cursor = self.database.cursor()
         sql_request = "DELETE FROM {}".format(name_table.value)
 
@@ -98,19 +96,23 @@ class DatabaseService:
 
             if len(conditions) != 0:
                 sql_request += " WHERE {}".format(" AND ".join(conditions_list))
-                print(sql_request)
-                print(tuple(values))
                 cursor.execute(sql_request, tuple(values))
+                debug("Demande de suppression, requête : {}.\nValeurs : {}".format(sql_request, values))
             else:
-                print(sql_request)
                 cursor.execute(sql_request)
+                debug("Demande de suppression, requête : {}".format(sql_request))
 
             self.database.commit()
-            error = cursor.rowcount != 1
+
+            if is_unique_delete:
+                error = cursor.rowcount != 1
+            else:
+                error = False
+
+            debug("Nombre de ligne supprimé : ", cursor.rowcount)
         except Exception:
             error = True
 
-        print(error)
         cursor.close()
 
         return error

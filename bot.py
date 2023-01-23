@@ -16,6 +16,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 # own class importations
+from entity.pagination.PaginationGames import PaginationGames
 from resources.hu_tao import HU_TAO
 from resources.word_hiragana import WORD_HIRAGANA
 from resources.word_katakana import WORD_KATAKANA
@@ -166,5 +167,13 @@ async def delete_game_to_list(ctx, *name):
             await ctx.send("Le jeu a bien été supprimé de la liste.")
         else:
             await ctx.send("Le jeu est introuvable ou un problème est survenu.")
+
+
+@bot.command("list_games")
+async def list_games(ctx):
+    print(game_service.get_all_games())
+    pagination = PaginationGames()
+    pagination.data = game_service.get_all_games()
+    await pagination.send(ctx)
 
 bot.run(TOKEN)

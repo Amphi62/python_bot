@@ -6,7 +6,6 @@ from entity.platform.SteamPlatform import SteamPlatform
 
 
 def build_instant_gaming_object(instant_gaming_link):
-    print('build_instant_gaming_object')
     session = HTMLSession()
     response = session.get(instant_gaming_link)
 
@@ -14,7 +13,7 @@ def build_instant_gaming_object(instant_gaming_link):
     discount = game.find("div.amount", first=True)
     sub_infos = game.find("div.subinfos", first=True)
 
-    stock = sub_infos.find("div.stock", first=True)
+    stock = sub_infos.find("div.stock,div.nostock", first=True)
     in_stock = StockEnum.IN_STOCK
 
     if stock is None:
@@ -31,7 +30,6 @@ def build_instant_gaming_object(instant_gaming_link):
 
 
 def build_steam_object(steam_link):
-    print('build_steam_object')
     session = HTMLSession()
     response = session.get(steam_link)
 
@@ -55,6 +53,4 @@ def check_link_game_exist(link_game):
     session = HTMLSession()
     status = session.get(link_game).status_code
     session.close()
-
-    print(status)
     return status == 200

@@ -50,3 +50,13 @@ class GameService:
         return not self.database_service.delete(TableEnum.GAME, [
             ("LOWER(name)", "=", name_game.lower())
         ])
+
+    def get_all_games(self):
+        request = """
+        SELECT g.name, i.discount_price, i.default_price, i.in_stock, s.discount_price, s.default_price
+        FROM game AS g
+        INNER JOIN steam AS s ON g.id = s.game
+        INNER JOIN instant_gaming AS i ON g.id = i.game
+        """
+
+        return self.database_service.specific_select_request(request)

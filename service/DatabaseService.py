@@ -103,16 +103,18 @@ class DatabaseService:
                 debug("Demande de suppression, requête : {}".format(sql_request))
 
             self.database.commit()
-
-            if is_unique_delete:
-                error = cursor.rowcount != 1
-            else:
-                error = False
-
-            debug("Nombre de ligne supprimé : ", cursor.rowcount)
+            error = False
         except Exception:
             error = True
 
         cursor.close()
 
         return error
+
+    def specific_select_request(self, request: str):
+        cursor = self.database.cursor()
+        cursor.execute(request)
+        results = cursor.fetchall()
+        cursor.close()
+
+        return results

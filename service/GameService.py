@@ -57,6 +57,7 @@ class GameService:
         FROM game AS g
         INNER JOIN steam AS s ON g.id = s.game
         INNER JOIN instant_gaming AS i ON g.id = i.game
+        ORDER BY g.name ASC
         """
 
         return self.database_service.specific_select_request(request)
